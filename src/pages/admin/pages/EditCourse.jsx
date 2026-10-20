@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCourseById } from "../../../store/slices/coursesSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { updateCourseAsync } from "../../../store/slices/adminSlice";
+import { updateCourseAsync, clearError } from "../../../store/slices/adminSlice";
 
 export default function EditCourse() {
     const { id } = useParams();
@@ -22,6 +22,10 @@ export default function EditCourse() {
         batches: [],
         syllabus: [],
     });
+
+    useEffect(() => {
+        dispatch(clearError());
+    }, [dispatch]);
 
     useEffect(() => {
         if (!currentCourse || currentCourse._id !== id) {

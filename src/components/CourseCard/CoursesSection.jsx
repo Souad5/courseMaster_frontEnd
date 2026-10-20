@@ -21,13 +21,13 @@ export default function CoursesSection() {
     const [category, setCategory] = useState("");
     const [tags, setTags] = useState("");
 
-    const fetchCourses = async () => {
+    const fetchCourses = async (pageToLoad = page) => {
         try {
             setLoading(true);
             setError(null);
 
             const params = {
-                page,
+                page: pageToLoad,
                 limit,
                 search: search || undefined,
                 sort: sort || undefined,
@@ -53,22 +53,17 @@ export default function CoursesSection() {
     const onSearchSubmit = (e) => {
         e.preventDefault();
         setPage(1);
-        fetchCourses();
+        fetchCourses(1);
     };
-
-    // reset page when filters change
-    useEffect(() => {
-        setPage(1);
-    }, [sort, category, tags]);
 
     return (
         <div className="space-y-6">
 
             <CoursesFilters
                 search={search} setSearch={setSearch}
-                sort={sort} setSort={setSort}
-                category={category} setCategory={setCategory}
-                tags={tags} setTags={setTags}
+                sort={sort} setSort={(v) => { setPage(1); setSort(v); }}
+                category={category} setCategory={(v) => { setPage(1); setCategory(v); }}
+                tags={tags} setTags={(v) => { setPage(1); setTags(v); }}
                 onSearchSubmit={onSearchSubmit}
             />
 

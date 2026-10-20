@@ -113,6 +113,8 @@ export default function CoursePlayer() {
 
     const module = currentCourse.syllabus?.[selectedModule];
     const lesson = module?.lessons?.[selectedLesson];
+    const completedIds = (enrollment?.progress?.completedLessons || []).map(String);
+    const lessonCompleted = !!lesson && completedIds.includes(String(lesson._id));
 
     return (
         <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
@@ -141,7 +143,8 @@ export default function CoursePlayer() {
                                 <h3 className="card-title text-base sm:text-lg md:text-xl break-words">{lesson.title}</h3>
                                 <div className="bg-base-300 rounded overflow-hidden mt-2 sm:mt-4">
                                     <iframe
-                                        style={{ height: '700px', width: '300px' }}
+                                        className="w-full aspect-video"
+                                        style={{ border: 0 }}
                                         src={convertToEmbedUrl(lesson.videoUrl)}
                                         title={lesson.title}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -152,10 +155,10 @@ export default function CoursePlayer() {
 
                                 <button
                                     onClick={handleMarkComplete}
-                                    disabled={!!enrollment?.progress?.completedLessons?.includes(lesson)}
-                                    className={`btn btn-sm sm:btn-md ${enrollment?.progress?.completedLessons?.includes(lesson) ? "btn-disabled" : "btn-success"} mt-3 sm:mt-4 w-full sm:w-auto`}
+                                    disabled={lessonCompleted}
+                                    className={`btn btn-sm sm:btn-md ${lessonCompleted ? "btn-disabled" : "btn-success"} mt-3 sm:mt-4 w-full sm:w-auto`}
                                 >
-                                    {enrollment?.progress?.completedLessons?.includes(lesson) ? "Completed ✓" : "✓ Mark as Complete"}
+                                    {lessonCompleted ? "Completed ✓" : "✓ Mark as Complete"}
                                 </button>
                             </div>
                         </div>
@@ -234,11 +237,7 @@ export default function CoursePlayer() {
                                                 const hasAssignment = !!les.assignmentPrompt;
                                                 const hasQuiz = les.quiz && les.quiz.length > 0;
                                                 const hasLiveClass = !!les.liveClassLink;
-                                                const isCompleted = enrollment?.progress?.completedLessons?.includes(les._id);
-                                                
-                                                // Check if live class is upcoming
-                                                const isUpcoming = hasLiveClass && les.liveClassDate && new Date(les.liveClassDate) > new Date();
-                                                const liveClassDate = hasLiveClass && les.liveClassDate ? new Date(les.liveClassDate) : null;
+                                                const isCompleted = completedIds.includes(String(les._id));
 
                                                 return (
                                                     <button
