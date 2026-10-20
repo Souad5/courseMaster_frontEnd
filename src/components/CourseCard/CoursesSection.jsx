@@ -52,8 +52,9 @@ export default function CoursesSection() {
 
     const onSearchSubmit = (e) => {
         e.preventDefault();
-        setPage(1);
-        fetchCourses(1);
+        // changing the page re-runs the effect above; otherwise fetch directly
+        if (page !== 1) setPage(1);
+        else fetchCourses(1);
     };
 
     return (
