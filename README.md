@@ -28,7 +28,7 @@ This is the frontend application of the CourseMaster platform, built with modern
 1. Clone the repository
 2. Navigate to the frontend directory:
    ```bash
-   cd course-master-frontend
+   cd courseMaster_frontEnd
    ```
 
 3. Install dependencies:
@@ -55,9 +55,23 @@ Create a `.env` file in the root directory with the following variables (see `.e
 ```env
 # Backend API Base URL
 VITE_API_BASE_URL=http://localhost:5000/api
-# For production, use your deployed backend URL:
-# VITE_API_BASE_URL=http://localhost:5000/api/api
+# For production, use your deployed backend URL (ending in /api):
+# VITE_API_BASE_URL=https://<your-backend-host>/api
 ```
+
+Vite reads `.env` only at startup, so restart `npm run dev` after changing it. The committed `.env.example` points at a hosted backend; change it to the local URL for development.
+
+## Quick Start (local)
+
+The backend (`courseMaster_Backend`) must be running first.
+
+```bash
+npm install
+echo "VITE_API_BASE_URL=http://localhost:5000/api" > .env
+npm run dev          # http://localhost:5173 (Vite uses the next free port if it is taken)
+```
+
+Demo accounts (created by the backend seed): `admin@coursemaster.com` / `admin123` and `student@coursemaster.com` / `student123`.
 
 **Required Variables:**
 - `VITE_API_BASE_URL` - The base URL of the backend API (required)
@@ -124,11 +138,20 @@ The frontend communicates with the backend API. All API endpoints are documented
 
 For complete API documentation with request/response formats, see [courseMaster_Backend/README.md](../courseMaster_Backend/README.md).
 
+## Bug fixes in this fork
+
+This fork fixes 15 frontend bugs found during QA (IDs FE-01 to FE-15 in the bug report):
+
+- **Auth and routing:** the token is saved and read under the same localStorage key, so login persists; the hardcoded-JWT "Dev Bypass" panel, the `dev_bypass` flag and the fail-open route fallback were removed; `ProtectedRoute` validates the session with the API and supports `requireAdmin`; the user profile is loaded after a page reload.
+- **Pages that were broken:** My Courses no longer crashes (the enrollments reducer stored `payload.data`); the course price is no longer multiplied by 100; enrolling with a batch sends the batch `_id`; the course player video is responsive and completed lessons are detected; dashboard progress uses the saved percent instead of NaN%.
+- **Admin:** the overview's Top Courses chart reads the real analytics fields and the fake "+12%" trend is gone; stale success/error banners are cleared when the course forms open; nested `<main>` landmarks fixed.
+- **UI polish:** navbar highlights only the current page, the mobile menu is no longer clipped, and the dead Profile and About links were removed; the course search no longer sends a stale-page request; the course card uses valid markup and wraps long titles.
+
 ## Development
 
 - Development server runs on `http://localhost:5173` (default Vite port)
 - Hot Module Replacement (HMR) is enabled
-- ESLint is configured for code quality
+- ESLint is configured for code quality (`npm run lint` still reports some pre-existing unused-variable errors)
 
 ## Deployment
 
